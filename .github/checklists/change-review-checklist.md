@@ -12,6 +12,7 @@ Use this file as the source of truth for the pre-commit review agent in `.github
 - External HTTP calls must be reviewed with the `external-http-calls` skill when a change adds or modifies outbound HTTP communication.
 - Database calls must be reviewed with the `database-calls` skill when a change adds or modifies database access, retry behavior, transaction handling, or health-check behavior.
 - External dependency call impact must be reviewed with the `dependency-call-impact` skill when a change increases the number, frequency, nesting, or fan-out of HTTP or database calls.
+- Cross-area change impact must be reviewed with the `change-impact-validation` skill when a change can affect behavior in other parts of the codebase beyond the edited files.
 - Scalability must be reviewed with the `scalability-validation` skill when a change can alter capacity limits, hot-path cost, partitioning behavior, workload amplification, or system behavior under higher traffic, larger datasets, or larger batch sizes.
 - Runtime safety and stale-data risk must be reviewed with the `runtime-safety-and-staleness` skill when a change can introduce runtime exceptions, invalid assumptions, cache inconsistency, or outdated reads.
 - Cache strategy and cache impact must be reviewed with the `cache-strategy-and-impact` skill when a change adds or modifies in-memory cache, Redis, distributed cache access, invalidation behavior, or cache-dependent business logic.
@@ -44,6 +45,16 @@ Use this file as the source of truth for the pre-commit review agent in `.github
 - Combined retry behavior across layers does not multiply the effective number of dependency calls beyond safe limits.
 - Failure, slowdown, or saturation of one dependency does not cascade into broad application slowness or unhealthy state without explicit justification.
 - Telemetry makes call count, fan-out, latency amplification, and saturation visible at request or job scope.
+
+## Change Impact Validation
+- Public contract changes (method signatures, DTO/schema fields, event payloads, config keys, flags, CLI arguments) are identified and all known consumers are updated or explicitly marked for follow-up.
+- Interface, abstract type, and shared utility changes are checked for downstream compile-time and runtime break risk.
+- Behavioral changes (defaults, ordering, filtering, validation, error handling, retries, timeouts) are reviewed for regression impact in calling flows.
+- Side effects in shared components (caching, logging, auth, serialization, concurrency, transaction boundaries) are checked across impacted call paths.
+- Data model, migration, and compatibility changes include read/write compatibility checks for old and new producers/consumers during rollout.
+- Feature-flag and configuration changes define safe defaults, fallback behavior, and rollback expectations for unaffected code paths.
+- Impacted test coverage is updated for both the changed area and at least one representative downstream integration path.
+- Risk ownership is clear: unresolved cross-area impacts are tracked with explicit follow-up action before merge.
 
 ## Scalability Validation
 - Added or modified paths remain acceptably bounded as request rate, tenant count, dataset size, queue depth, or batch size increases.
@@ -98,6 +109,7 @@ Use this file as the source of truth for the pre-commit review agent in `.github
 - Use `.github/skills/external-http-calls/SKILL.md` for the detailed review workflow and suggestions.
 - Use `.github/skills/database-calls/SKILL.md` for the detailed database review workflow and suggestions.
 - Use `.github/skills/dependency-call-impact/SKILL.md` for the detailed workflow on multiplied HTTP/database call impact.
+- Use `.github/skills/change-impact-validation/SKILL.md` for the detailed workflow on validating downstream and cross-area impact from code changes.
 - Use `.github/skills/scalability-validation/SKILL.md` for the detailed workflow on capacity, hot-spot, overload, and scale-behavior review.
 - Use `.github/skills/runtime-safety-and-staleness/SKILL.md` for the detailed workflow on runtime exceptions and stale-data risks.
 - Use `.github/skills/cache-strategy-and-impact/SKILL.md` for the detailed workflow on cache design and cache impact.
