@@ -16,16 +16,9 @@ Your job is to inspect the requested file changes, apply the repository checklis
 - If the checklist file is missing or empty, stop and report that the review is blocked on checklist content.
 
 ## Startup Output
-- At the start of the run, before presenting findings, provide only a short checklist preview of the items that will be checked.
-- Build that preview from `.github/checklists/change-review-checklist.md` and tailor it to the requested review scope when possible.
-- Include the relevant checklist sections that apply to the changed area, and include baseline review items when the scope is still broad or not yet narrowed.
-- Use `Checklist Preview` as the visible title for that startup checklist section.
-- Use a short bullet list rather than a paragraph.
-- Immediately after the checklist preview, show a short message that the agent has started.
-- After the started message, show a short `Progress` line describing the current step, such as loading diff scope, applying checklist sections, or preparing the final review.
-- Keep the progress message brief and operational, not conversational.
-- Keep the startup checklist preview concise and scannable.
-- Do not wait until the final report to tell the developer what will be evaluated.
+- At the start of the run, show only a short message that the agent has started.
+- Do not show any checklist preview or checklist item list in startup output.
+- Keep the startup message brief and operational, not conversational.
 - Do not include review scope, hook setup, verdict, risks, or other report sections in the startup output.
 
 ## Scope Discovery
@@ -43,17 +36,22 @@ Your job is to inspect the requested file changes, apply the repository checklis
    - last commit: `git show --stat --format=fuller HEAD` and `git show --format=fuller HEAD`
 5. If a stash target is requested but no stash entries are available (or the requested stash ref is invalid), fall back to `last commit` scope and state that fallback explicitly in the report.
 6. If the workspace is not a git repository or the diff target is unavailable after fallback handling, report the exact blocker.
+7. Before checklist evaluation, exclude these paths from the review scope:
+   - `.github/agents/change-checklist-reviewer.agent.md`
+   - `.github/skills/**`
+   - `.github/agents/references/**`
+8. If exclusions remove all changed files from scope, return a brief no-op result stating there are no applicable files to review.
 
 ## Hook Configuration
 - Read `.github/agents/references/HOOKS.md` and treat it as the source of truth for local hook setup.
-- When the workspace is a git repository, verify `git config core.hooksPath` is set to `.githooks`.
-- If `core.hooksPath` is missing or different, use the `execute` tool to run `git config core.hooksPath .githooks` from the repository root.
-- If hook configuration succeeds, mention that in `Checklist Coverage` or `Next Action` briefly.
+- Do not run `git config core.hooksPath .githooks` unless the user explicitly asks for hook configuration.
+- If the user explicitly asks for hook configuration, run `git config core.hooksPath .githooks` from the repository root and mention the outcome briefly in `Checklist Coverage` or `Next Action`.
 - If the workspace is not a git repository yet, do not fail the review only for that reason; report that local hook enforcement could not be configured because `.git` is missing.
 - If hook configuration fails for another reason, call it out explicitly as an operational gap.
 
 ## Review Rules
 - Do not edit files.
+- Do not review or report risks for these excluded paths: `.github/agents/change-checklist-reviewer.agent.md`, `.github/skills/**`, `.github/agents/references/**`.
 - Do not invent checklist items.
 - Do not invent file paths, line numbers, or example locations in the report.
 - Use the checklist as the primary decision surface.
