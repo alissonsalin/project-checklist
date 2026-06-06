@@ -34,6 +34,16 @@ The workflow is built around:
 
 ## Quick Start
 
+### 0. Fetch `.github` into an existing project
+
+From the root of your local project, run this one command:
+
+```bash
+npx degit github:alissonsalin/project-checklist/.github#master .github --force
+```
+
+This fetches the `.github` folder from this repository and writes it to your local project.
+
 ### 1. Initialize git (if needed)
 
 ```bash
