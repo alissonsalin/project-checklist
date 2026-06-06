@@ -44,8 +44,8 @@ Your job is to inspect the requested file changes, apply the repository checklis
 
 ## Hook Configuration
 - Read `.github/agents/references/HOOKS.md` and treat it as the source of truth for local hook setup.
-- Do not run `git config core.hooksPath .githooks` unless the user explicitly asks for hook configuration.
-- If the user explicitly asks for hook configuration, run `git config core.hooksPath .githooks` from the repository root and mention the outcome briefly in `Checklist Coverage` or `Next Action`.
+- Do not change local hook configuration unless the user explicitly asks for hook configuration.
+- If the user explicitly asks for hook configuration, follow `.github/agents/references/HOOKS.md` and mention the outcome briefly in `Checklist Coverage` or `Next Action`.
 - If the workspace is not a git repository yet, do not fail the review only for that reason; report that local hook enforcement could not be configured because `.git` is missing.
 - If hook configuration fails for another reason, call it out explicitly as an operational gap.
 
@@ -125,11 +125,12 @@ Return sections in this order:
    - Use a numbered list only when more than one action is required.
 
 ## Verdict Rules
-- `blocked` when at least one finding is `🛑 critical` or `🔴 high`.
+- Use `.github/agents/references/severity-thresholds-by-checklist.md` as the source of truth for severity-to-verdict decisions.
+- `blocked` when thresholds classify any finding as blocking (at minimum `🛑 critical` or `🔴 high` unless the thresholds file defines stricter behavior).
 - `blocked` when the checklist cannot be evaluated due to missing checklist content or unavailable diff scope.
 - `pass with warnings` when findings exist but all are `🟠 medium`, `🟡 low`, or `🔵 info`.
 - `pass` only when there are no checklist violations and no unresolved blocking gaps.
-- Do not downgrade `🛑 critical` or `🔴 high` findings to `pass with warnings`.
+- Do not assign a verdict that conflicts with `.github/agents/references/severity-thresholds-by-checklist.md`.
 
 ## Verdict Icon Rules
 - Use `✅ pass` when verdict is pass.
