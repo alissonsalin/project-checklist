@@ -19,6 +19,7 @@ Use this file as the source of truth for the pre-commit review agent in `.github
 - Cache strategy and cache impact must be reviewed with the `cache-strategy-and-impact` skill when a change adds or modifies in-memory cache, Redis, distributed cache access, invalidation behavior, or cache-dependent business logic.
 - Resource usage and lifecycle safety must be reviewed with the `resource-usage-and-lifecycle` skill when a change can alter CPU usage, memory usage, or how resources are allocated and released.
 - Logging quality and signal-to-noise must be reviewed with the `logging-signal-and-severity` skill when a change adds or modifies logging, tracing context, log levels, or alert-relevant events.
+- Retry mechanism safety must be reviewed with the `retry-mechanism` skill when a change adds or modifies retry loops, resilience policies, backoff configuration, circuit breakers, re-queue behavior, or any flow that can repeat a failed operation.
 
 ## External HTTP Calls
 - Retries are present only for transient failures such as timeouts, connection failures, `429`, or `5xx` responses.
@@ -106,6 +107,22 @@ Use this file as the source of truth for the pre-commit review agent in `.github
 - Telemetry makes CPU saturation, memory growth, GC pressure, and resource-leak symptoms visible before user impact.
 - User impact (latency spikes, timeouts, degraded experience) and service impact (instability, restarts, cost) are explicitly evaluated.
 
+## Retry Mechanism
+- Retry loops have an explicit maximum attempt count, maximum elapsed time, or both — infinite retry loops are not present.
+- Backoff uses bounded exponential delay with jitter; constant-delay and zero-delay retries are not used.
+- The per-attempt backoff delay has an upper cap, and `Retry-After` or equivalent back-pressure signals are respected.
+- Retries are applied only to genuinely transient errors such as timeouts, connect failures, `429`, and `5xx`; permanent errors (`400`, `401`, `403`, `404`, constraint violations) are not retried.
+- Non-idempotent write operations are not retried without an idempotency key, deduplication token, or transaction-safe design.
+- Nested retry policies across caller, client, driver, and SDK layers are identified and the combined worst-case call multiplier is within safe limits.
+- Retrying a fan-out operation accounts for the amplified downstream call count produced by each retry.
+- Cancellation tokens and end-to-end deadlines propagate into the retry loop and abort outstanding attempts cleanly.
+- Message or job retry flows have a maximum delivery-attempt limit and a dead-letter or poison-message route.
+- SDK default retry policies are not silently stacked on top of application-level retry policies.
+- A circuit breaker is present or explicitly considered when the target dependency has a history of extended outages.
+- Logs, metrics, or tracing distinguish first-attempt failures from retried failures and record final retry exhaustion separately.
+- Logging inside retry loops is at `debug` level or suppressed after the first attempt to prevent log floods under sustained failure.
+- Dashboards or alerts exist for elevated retry rates, circuit-breaker open events, and retry budget exhaustion.
+
 ## Logging Signal And Severity
 - Logs include enough context to trace a request or workflow, such as correlation identifiers, key operation metadata, and relevant boundaries.
 - Logging volume is bounded to avoid log flood under high traffic, retries, loops, or repeated failures.
@@ -127,3 +144,4 @@ Use this file as the source of truth for the pre-commit review agent in `.github
 - Use `.github/skills/cache-strategy-and-impact/SKILL.md` for the detailed workflow on cache design and cache impact.
 - Use `.github/skills/resource-usage-and-lifecycle/SKILL.md` for the detailed workflow on CPU/memory usage and resource release safety.
 - Use `.github/skills/logging-signal-and-severity/SKILL.md` for the detailed workflow on log traceability, severity correctness, and flood prevention.
+- Use `.github/skills/retry-mechanism/SKILL.md` for the detailed workflow on retry loop safety, backoff quality, call amplification, idempotency, circuit-breaker review, and retry observability.
