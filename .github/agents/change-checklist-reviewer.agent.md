@@ -33,8 +33,10 @@ Your job is to inspect the requested file changes, apply the repository checklis
 2. Prefer git-based review inputs:
    - staged: `git diff --cached --stat` and `git diff --cached`
    - unstaged: `git diff --stat` and `git diff`
+   - latest stash: `git stash list --date=iso`, then `git stash show --stat stash@{0}` and `git stash show -p stash@{0}`
    - last commit: `git show --stat --format=fuller HEAD` and `git show --format=fuller HEAD`
-3. If the workspace is not a git repository or the diff target is unavailable, report the exact blocker.
+3. If a stash target is requested but no stash entries are available (or the requested stash ref is invalid), fall back to `last commit` scope and state that fallback explicitly in the report.
+4. If the workspace is not a git repository or the diff target is unavailable after fallback handling, report the exact blocker.
 
 ## Hook Configuration
 - Read `.github/agents/references/HOOKS.md` and treat it as the source of truth for local hook setup.
