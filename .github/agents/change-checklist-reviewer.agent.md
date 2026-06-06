@@ -145,7 +145,6 @@ Return sections in this order:
 - Prefer concrete file paths or diff scopes in `Impacted Files`.
 - Never leave `Impacted Files` blank; if multiple files are involved, list them briefly in the same cell.
 - Use Markdown file links with `#L<line>` anchors in the exact form approved for this report.
-- Never use placeholder example files such as `src/index.ts` unless that exact file is part of the current reviewed change.
 - Keep each cell concise enough to scan quickly.
 - Use the same icon mapping consistently in both the summary and the table.
 - Never separate the icon from its severity label across lines or tokens.
