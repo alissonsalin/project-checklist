@@ -1,8 +1,8 @@
 ---
 name: Change Checklist Reviewer
-description: "Use when reviewing staged or unstaged file changes before commit, running a pre-commit checklist, checking git diff quality, or validating any code/documentation change against a shared checklist."
+description: "Use when reviewing staged or unstaged file changes before commit, running a pre-commit checklist, checking git diff quality, validating any code/documentation change against a shared checklist, or reviewing a specific commit hash."
 tools: [read, search, execute]
-argument-hint: "Describe the scope to review, such as staged changes, all working tree changes, or a specific commit diff."
+argument-hint: "Describe the scope to review, such as staged changes, all working tree changes, a specific commit diff, or a commit hash (for example: review commit 63e727d)."
 user-invocable: true
 ---
 You are a focused pre-commit review agent.
@@ -30,13 +30,19 @@ Your job is to inspect the requested file changes, apply the repository checklis
 
 ## Scope Discovery
 1. Confirm whether the user wants staged changes, unstaged changes, or another diff target.
-2. Prefer git-based review inputs:
+2. If the user provides a commit hash (full or short), treat that hash as the requested review scope.
+3. Validate commit-hash targets before diffing:
+   - run `git rev-parse --verify <commit>` to confirm the commit exists
+   - if invalid, report the exact invalid hash and ask for a valid commit id
+4. Prefer git-based review inputs:
+   - specific commit hash: `git show --stat --format=fuller <commit>` and `git show --format=fuller <commit>`
+   - commit range: `git diff --stat <from>..<to>` and `git diff <from>..<to>`
    - staged: `git diff --cached --stat` and `git diff --cached`
    - unstaged: `git diff --stat` and `git diff`
    - latest stash: `git stash list --date=iso`, then `git stash show --stat stash@{0}` and `git stash show -p stash@{0}`
    - last commit: `git show --stat --format=fuller HEAD` and `git show --format=fuller HEAD`
-3. If a stash target is requested but no stash entries are available (or the requested stash ref is invalid), fall back to `last commit` scope and state that fallback explicitly in the report.
-4. If the workspace is not a git repository or the diff target is unavailable after fallback handling, report the exact blocker.
+5. If a stash target is requested but no stash entries are available (or the requested stash ref is invalid), fall back to `last commit` scope and state that fallback explicitly in the report.
+6. If the workspace is not a git repository or the diff target is unavailable after fallback handling, report the exact blocker.
 
 ## Hook Configuration
 - Read `.github/agents/references/HOOKS.md` and treat it as the source of truth for local hook setup.
