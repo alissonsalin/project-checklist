@@ -42,6 +42,16 @@ Use this reference to classify findings consistently across checklist areas.
 | Dependency Call Impact | Efficiency concern with limited immediate operational impact. | low |
 | Dependency Call Impact | Improvement suggestions for batching, caching, or memoization. | info |
 
+## Comment And Impact Validation
+
+| Type | Description | Severity |
+| --- | --- | --- |
+| Comment And Impact Validation | Critical-path executable logic is accidentally left commented out in final commit, or disabled code causes unmitigated outage/correctness risk. | critical |
+| Comment And Impact Validation | Commented-out runtime logic or shared-contract behavior change lacks explicit justification and likely impacts downstream callers without validation. | high |
+| Comment And Impact Validation | Commented-out code or impact evidence is incomplete but bounded to lower-frequency paths or partially validated scenarios. | medium |
+| Comment And Impact Validation | Maintainability or documentation quality gap with limited immediate incident risk. | low |
+| Comment And Impact Validation | Optional improvement suggestion for comment hygiene or impact traceability. | info |
+
 ## Runtime Safety And Stale Data
 
 | Type | Description | Severity |

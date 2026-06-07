@@ -12,6 +12,7 @@ Use this file as the source of truth for the pre-commit review agent in `.github
 - External HTTP calls must be reviewed with the `external-http-calls` skill when a change adds or modifies outbound HTTP communication.
 - Database calls must be reviewed with the `database-calls` skill when a change adds or modifies database access, retry behavior, transaction handling, or health-check behavior.
 - External dependency call impact must be reviewed with the `dependency-call-impact` skill when a change increases the number, frequency, nesting, or fan-out of HTTP or database calls.
+- Accidental commented-out code and committed-change impact must be reviewed with the `comment-and-impact-validation` skill when a change may leave disabled code in comments, or alters behavior that may affect other modules, callers, or operations.
 - Cross-area change impact must be reviewed with the `change-impact-validation` skill when a change can affect behavior in other parts of the codebase beyond the edited files.
 - Flags and environment variables must be reviewed with the `flag-and-env-validation` skill when a change adds, removes, renames, or changes config flags, feature flags, or environment-variable reads.
 - Scalability must be reviewed with the `scalability-validation` skill when a change can alter capacity limits, hot-path cost, partitioning behavior, workload amplification, or system behavior under higher traffic, larger datasets, or larger batch sizes.
@@ -57,6 +58,18 @@ Use this file as the source of truth for the pre-commit review agent in `.github
 - Feature-flag and configuration changes define safe defaults, fallback behavior, and rollback expectations for unaffected code paths.
 - Impacted test coverage is updated for both the changed area and at least one representative downstream integration path.
 - Risk ownership is clear: unresolved cross-area impacts are tracked with explicit follow-up action before merge.
+
+## Comment And Impact Validation
+- Commented-out executable code is not left in final commits unless explicitly justified as a temporary, tracked mitigation.
+- Lines that look like disabled code in comments are reviewed to distinguish documentation/examples from accidentally disabled runtime behavior.
+- Temporary commented-out code includes owner, issue reference, and planned cleanup criteria when retention is unavoidable.
+- Non-obvious business logic, guard conditions, compensating behavior, and failure-path decisions include concise comments that explain intent and safety assumptions.
+- Temporary mitigations, hotfix branches, and unusual workarounds are documented with removal criteria or follow-up tracking references.
+- Behavioral changes introduced in committed code are checked for caller, downstream, and operator impact beyond the edited file.
+- Public/shared contract changes include explicit impact notes for known consumers and rollout compatibility expectations.
+- Risky code paths include evidence of impact validation such as targeted tests, compatibility checks, or explicit follow-up owner/action.
+- Removed comments are reviewed to ensure readability and intent remain clear from surrounding code and naming alone.
+- Changes that are intentionally self-documenting are still validated for downstream impact when behavior, data shape, or side effects changed.
 
 ## Flags And Environment Variables
 - New, renamed, or removed flags and environment variables are identified and the required deployment/configuration updates are explicit.
@@ -137,6 +150,7 @@ Use this file as the source of truth for the pre-commit review agent in `.github
 - Use `.github/skills/external-http-calls/SKILL.md` for the detailed review workflow and suggestions.
 - Use `.github/skills/database-calls/SKILL.md` for the detailed database review workflow and suggestions.
 - Use `.github/skills/dependency-call-impact/SKILL.md` for the detailed workflow on multiplied HTTP/database call impact.
+- Use `.github/skills/comment-and-impact-validation/SKILL.md` for the detailed workflow on accidental commented-out code in final commits, intent clarity, and committed-change impact validation.
 - Use `.github/skills/change-impact-validation/SKILL.md` for the detailed workflow on validating downstream and cross-area impact from code changes.
 - Use `.github/skills/flag-and-env-validation/SKILL.md` for the detailed workflow on flag, config, and environment-variable safety, especially missing-value impact.
 - Use `.github/skills/scalability-validation/SKILL.md` for the detailed workflow on capacity, hot-spot, overload, and scale-behavior review.
