@@ -6,7 +6,7 @@ The workflow is built around:
 - a custom VS Code agent (`Change Checklist Reviewer`)
 - a shared checklist
 - checklist-specific skills
-- optional local git-hook enforcement based on the saved review report
+- saved review reports for commit-time decision support
 
 ## Repository Structure
 
@@ -16,21 +16,14 @@ The workflow is built around:
   - Source of truth for what must be reviewed.
 - `.github/skills/`
   - One skill per checklist concern (HTTP calls, DB calls, fan-out impact, cache, etc.).
-- `.github/agents/references/HOOKS.md`
-  - Local hook setup and behavior.
 - `.github/agents/references/severity-thresholds-by-checklist.md`
   - Severity thresholds and modifiers used during review.
-- `.githooks/pre-commit`
-  - Pre-commit hook entrypoint.
-- `scripts/checklist-gate.ps1`
-  - Report-driven commit gate script.
 
 ## How It Works
 
 1. Run `Change Checklist Reviewer` on your changes.
 2. The agent evaluates changes against the checklist and relevant skills.
 3. The agent writes a report to `reports/last-agent-review.md` and a timestamped history file.
-4. If local hooks are enabled, commit is blocked when report verdict is `blocked`.
 
 ## Quick Start
 
@@ -50,19 +43,13 @@ This fetches the `.github` folder from this repository and writes it to your loc
 git init
 ```
 
-### 2. Configure hooks path
-
-```bash
-git config core.hooksPath .githooks
-```
-
-### 3. Run the review agent
+### 2. Run the review agent
 
 Use the `Change Checklist Reviewer` agent from VS Code chat for staged, unstaged, or target commit scope.
 
-### 4. Commit
+### 3. Commit
 
-After review report is written, commit normally. The hook reads `reports/last-agent-review.md`.
+After review report is written, commit normally.
 
 ## Severity Thresholds
 

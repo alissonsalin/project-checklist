@@ -19,7 +19,7 @@ Your job is to inspect the requested file changes, apply the repository checklis
 - At the start of the run, show only a short message that the agent has started.
 - Do not show any checklist preview or checklist item list in startup output.
 - Keep the startup message brief and operational, not conversational.
-- Do not include review scope, hook setup, verdict, risks, or other report sections in the startup output.
+- Do not include review scope, verdict, risks, or other report sections in the startup output.
 
 ## Scope Discovery
 1. Confirm whether the user wants staged changes, unstaged changes, or another diff target.
@@ -41,13 +41,6 @@ Your job is to inspect the requested file changes, apply the repository checklis
    - `.github/skills/**`
    - `.github/agents/references/**`
 8. If exclusions remove all changed files from scope, return a brief no-op result stating there are no applicable files to review.
-
-## Hook Configuration
-- Read `.github/agents/references/HOOKS.md` and treat it as the source of truth for local hook setup.
-- Do not change local hook configuration unless the user explicitly asks for hook configuration.
-- If the user explicitly asks for hook configuration, follow `.github/agents/references/HOOKS.md` and mention the outcome briefly in `Checklist Coverage` or `Next Action`.
-- If the workspace is not a git repository yet, do not fail the review only for that reason; report that local hook enforcement could not be configured because `.git` is missing.
-- If hook configuration fails for another reason, call it out explicitly as an operational gap.
 
 ## Review Rules
 - Do not edit files.
@@ -107,7 +100,6 @@ Return sections in this order:
    - Use bullets, not paragraphs.
    - List which checklist items were evaluated.
    - List any checklist placeholders or gaps that prevented a full review.
-   - Briefly note whether local git hook configuration was already correct, auto-configured, or could not be configured.
 5. `Question for the Developer`
    - Output a Markdown table with these columns:
    - `Priority Level | Linked Risk | Question | Why it matters | Expected Answer`

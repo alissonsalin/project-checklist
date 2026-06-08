@@ -21,6 +21,7 @@ Use this file as the source of truth for the pre-commit review agent in `.github
 - Resource usage and lifecycle safety must be reviewed with the `resource-usage-and-lifecycle` skill when a change can alter CPU usage, memory usage, or how resources are allocated and released.
 - Logging quality and signal-to-noise must be reviewed with the `logging-signal-and-severity` skill when a change adds or modifies logging, tracing context, log levels, or alert-relevant events.
 - Retry mechanism safety must be reviewed with the `retry-mechanism` skill when a change adds or modifies retry loops, resilience policies, backoff configuration, circuit breakers, re-queue behavior, or any flow that can repeat a failed operation.
+- Queue consumer processing safety must be reviewed with the `queue-consumer-processing-safety` skill when a change adds or modifies Kafka, RabbitMQ, SQS, Service Bus, Pub/Sub, or other queue/stream consumers, especially per-message logging, external API calls, or database calls.
 
 ## External HTTP Calls
 - Retries are present only for transient failures such as timeouts, connection failures, `429`, or `5xx` responses.
@@ -146,6 +147,20 @@ Use this file as the source of truth for the pre-commit review agent in `.github
 - Structured logging fields are consistent so dashboards, alerts, and search queries remain reliable.
 - Logs support both user impact analysis (failed actions, degraded experience) and service impact analysis (error rates, saturation, noisy retries).
 
+## Queue Consumer Processing Safety
+- Per-message logging is bounded and does not emit full payloads or high-cardinality fields at `info`/`warning` in steady-state traffic.
+- The effective external dependency call count per message (HTTP, database, cache, filesystem) is mapped, bounded, and acceptable for expected throughput and replay/retry scenarios.
+- Per-message HTTP calls use explicit timeout, bounded retry, and backoff rules that avoid downstream overload and retry storms.
+- Per-message database access avoids N+1 and row-by-row amplification when batching or set-based writes/reads are possible.
+- Consumer retry, requeue, and dead-letter behavior is explicit, bounded, and safe for poison-message scenarios.
+- Idempotency and deduplication strategy is defined for at-least-once delivery and replay, especially for write side effects.
+- Commit/ack timing is safe: offsets/acks are recorded only after required side effects succeed, with clear handling for partial failure.
+- Concurrency, prefetch, and partition/worker parallelism are bounded to avoid pool exhaustion, rate-limit spikes, or downstream saturation.
+- Ordering assumptions are explicit and validated where key-based ordering or exactly-once behavior is required.
+- Backpressure and overload behavior is defined (pause, slow down, shed, defer) so backlog growth does not collapse dependent systems.
+- Consumer health and lag signals are observable: queue lag, processing latency, retry rate, DLQ rate, commit failures, and per-message dependency latency.
+- Security and privacy controls prevent sensitive message fields from being logged or sent unnecessarily to external dependencies.
+
 ## Optional Notes
 - Use `.github/skills/external-http-calls/SKILL.md` for the detailed review workflow and suggestions.
 - Use `.github/skills/database-calls/SKILL.md` for the detailed database review workflow and suggestions.
@@ -159,3 +174,4 @@ Use this file as the source of truth for the pre-commit review agent in `.github
 - Use `.github/skills/resource-usage-and-lifecycle/SKILL.md` for the detailed workflow on CPU/memory usage and resource release safety.
 - Use `.github/skills/logging-signal-and-severity/SKILL.md` for the detailed workflow on log traceability, severity correctness, and flood prevention.
 - Use `.github/skills/retry-mechanism/SKILL.md` for the detailed workflow on retry loop safety, backoff quality, call amplification, idempotency, circuit-breaker review, and retry observability.
+- Use `.github/skills/queue-consumer-processing-safety/SKILL.md` for the detailed workflow on queue/stream consumer safety, including per-message log volume, dependency call amplification, ack/commit correctness, retries, and DLQ behavior.
