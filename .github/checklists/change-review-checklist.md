@@ -1,6 +1,6 @@
 # Change Review Checklist
 
-Use this file as the source of truth for the pre-commit review agent in `.github/agents/change-checklist-reviewer.agent.md`.
+Use this file as the source of truth for the review agent in `.github/agents/change-checklist-reviewer.agent.md`.
 
 ## How to Maintain
 - Replace each `TODO` item with a concrete review rule.
@@ -161,7 +161,7 @@ Use this file as the source of truth for the pre-commit review agent in `.github
 - Consumer health and lag signals are observable: queue lag, processing latency, retry rate, DLQ rate, commit failures, and per-message dependency latency.
 - Security and privacy controls prevent sensitive message fields from being logged or sent unnecessarily to external dependencies.
 
-## Optional Notes
+## Skill to use
 - Use `.github/skills/external-http-calls/SKILL.md` for the detailed review workflow and suggestions.
 - Use `.github/skills/database-calls/SKILL.md` for the detailed database review workflow and suggestions.
 - Use `.github/skills/dependency-call-impact/SKILL.md` for the detailed workflow on multiplied HTTP/database call impact.

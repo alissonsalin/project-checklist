@@ -19,11 +19,46 @@ The workflow is built around:
 - `.github/agents/references/severity-thresholds-by-checklist.md`
   - Severity thresholds and modifiers used during review.
 
+## Checks, Purpose, and Skills
+
+| Check | Purpose | Skill Used |
+|---|---|---|
+| External HTTP Calls | Validate retries, backoff, idempotency, timeout/cancellation, dependency health behavior, and observability for outbound HTTP. | external-http-calls |
+| Database Calls | Validate transient retry behavior, transaction safety, timeout/cancellation, pool pressure, degradation behavior, and telemetry. | database-calls |
+| Dependency Call Impact | Validate fan-out, N+1 patterns, bounded call counts, batching/caching opportunities, and cross-layer retry amplification. | dependency-call-impact |
+| Comment And Impact Validation | Detect accidentally commented-out executable logic and validate downstream behavior impact of committed changes. | comment-and-impact-validation |
+| Change Impact Validation | Validate cross-area impact: contracts, callers, shared utilities, behavior changes, rollout compatibility, and downstream tests. | change-impact-validation |
+| Flags And Environment Variables | Validate config/flag/env safety for missing or malformed values, defaults, rollout/rollback compatibility, and visibility signals. | flag-and-env-validation |
+| Scalability Validation | Validate behavior under higher load/data/batch sizes: hot paths, bottlenecks, partitioning, backpressure, and capacity signals. | scalability-validation |
+| Runtime Safety And Stale Data | Validate null safety, parsing/casting assumptions, concurrency/race risks, exception handling, and stale-data decision risk. | runtime-safety-and-staleness |
+| Cache Strategy And Impact | Validate cache key/TTL/invalidation design, freshness expectations, failure fallback, tenancy boundaries, and cache telemetry. | cache-strategy-and-impact |
+| Resource Usage And Lifecycle | Validate CPU/memory bounds and correct acquire/release lifecycle for files, sockets, timers, subscriptions, and background work. | resource-usage-and-lifecycle |
+| Logging Signal And Severity | Validate log quality, severity correctness, traceability context, flood control, and sensitive-data handling. | logging-signal-and-severity |
+| Retry Mechanism | Validate bounded retries, exponential backoff with jitter, idempotency safety, nested retry multiplication risk, and retry observability. | retry-mechanism |
+| Queue Consumer Processing Safety | Validate per-message log volume, dependency-call amplification, idempotency, retry and DLQ strategy, ack and commit correctness, and lag and health metrics. | queue-consumer-processing-safety |
+
 ## How It Works
 
 1. Run `Change Checklist Reviewer` on your changes.
 2. The agent evaluates changes against the checklist and relevant skills.
 3. The agent writes a report to `reports/last-agent-review.md` and a timestamped history file.
+
+## How to Use the Agent
+
+1. Open VS Code chat.
+2. Select the `Change Checklist Reviewer` agent.
+3. Ask for the scope you want to review, for example:
+  - `review staged changes`
+  - `review unstaged changes`
+  - `review commit 63e727d`
+  - `review range main..feature-branch`
+4. Wait for the report sections:
+  - `Verdict`
+  - `Risk Table`
+  - `Checklist Coverage`
+  - `Question for the Developer`
+  - `Next Action`
+5. Resolve blocking or warning findings, then commit.
 
 ## Quick Start
 
