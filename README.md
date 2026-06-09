@@ -37,6 +37,7 @@ The workflow is built around:
 | Retry Mechanism | Validate bounded retries, exponential backoff with jitter, idempotency safety, nested retry multiplication risk, and retry observability. | retry-mechanism |
 | Queue Consumer Processing Safety | Validate per-message log volume, dependency-call amplification, idempotency, retry and DLQ strategy, ack and commit correctness, and lag and health metrics. | queue-consumer-processing-safety |
 | Exception Handling Safety | Validate exception boundaries, catch-block quality, async fault propagation, error translation consistency, fallback safety, and failure-path observability. | exception-handling-safety |
+| Promise Resource Retention Safety | Validate unresolved-promise risk, exception-path cleanup, in-flight async bounds, cancellation/timeout discipline, and memory/resource retention in promise flows. | promise-resource-retention-safety |
 
 ## How It Works
 

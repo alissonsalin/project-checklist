@@ -23,6 +23,7 @@ Use this file as the source of truth for the review agent in `.github/agents/cha
 - Retry mechanism safety must be reviewed with the `retry-mechanism` skill when a change adds or modifies retry loops, resilience policies, backoff configuration, circuit breakers, re-queue behavior, or any flow that can repeat a failed operation.
 - Queue consumer processing safety must be reviewed with the `queue-consumer-processing-safety` skill when a change adds or modifies Kafka, RabbitMQ, SQS, Service Bus, Pub/Sub, or other queue/stream consumers, especially per-message logging, external API calls, or database calls.
 - Exception handling safety must be reviewed with the `exception-handling-safety` skill when a change adds or modifies throw/catch logic, async failure paths, fallback behavior, or error translation boundaries.
+- Promise resource retention safety must be reviewed with the `promise-resource-retention-safety` skill when a change adds or modifies promises/async orchestration that can retain memory, handles, timers, or in-flight state during exception, timeout, or cancellation paths.
 
 ## External HTTP Calls
 - Retries are present only for transient failures such as timeouts, connection failures, `429`, or `5xx` responses.
@@ -172,6 +173,16 @@ Use this file as the source of truth for the review agent in `.github/agents/cha
 - Error logs, metrics, and traces make exception rate, fallback activation, and final failure outcomes observable.
 - Tests cover failure-path behavior, including malformed input, dependency exceptions, and async fault propagation.
 
+## Promise Resource Retention Safety
+- Promise/async flows guarantee settlement, timeout, or cancellation; pending work cannot remain unresolved indefinitely.
+- Exception paths always run cleanup/finalization so memory, streams, sockets, timers, and locks are released.
+- Rejections from detached or background promise work are observed, classified, and surfaced with diagnostics.
+- In-flight registries, dedup maps, and pending-task queues are bounded and cleaned on success, failure, and timeout.
+- Promise closures avoid retaining large object graphs longer than required.
+- Parallel promise fan-out is bounded and backpressure-aware to prevent memory spikes.
+- Cancellation and timeout signals propagate through nested async calls and release retained references.
+- Tests and telemetry cover timeout, rejection, cancellation, in-flight backlog growth, and unhandled rejection behavior.
+
 ## Skill to use
 - Use `.github/skills/external-http-calls/SKILL.md` for the detailed review workflow and suggestions.
 - Use `.github/skills/database-calls/SKILL.md` for the detailed database review workflow and suggestions.
@@ -187,3 +198,4 @@ Use this file as the source of truth for the review agent in `.github/agents/cha
 - Use `.github/skills/retry-mechanism/SKILL.md` for the detailed workflow on retry loop safety, backoff quality, call amplification, idempotency, circuit-breaker review, and retry observability.
 - Use `.github/skills/queue-consumer-processing-safety/SKILL.md` for the detailed workflow on queue/stream consumer safety, including per-message log volume, dependency call amplification, ack/commit correctness, retries, and DLQ behavior.
 - Use `.github/skills/exception-handling-safety/SKILL.md` for the detailed workflow on exception boundaries, catch-block quality, async fault handling, failure translation, fallback safety, and runtime failure observability.
+- Use `.github/skills/promise-resource-retention-safety/SKILL.md` for the detailed workflow on unresolved promises, exception-path cleanup, in-flight async bounds, cancellation propagation, and memory/resource retention risk in promise flows.

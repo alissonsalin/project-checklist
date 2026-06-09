@@ -84,7 +84,7 @@ Return sections in this order:
 3. `Risk Table`
    - Output a Markdown table with these columns:
    - `Category | Checklist Section | Risk | Impacted Files | Evidence | Developer Action`
-   - `Category` should be a short label such as `retries`, `backoff`, `health`, `fan-out`, `timeouts`, `pool`, `exceptions`, or `observability`.
+   - `Category` should be a short label such as `retries`, `backoff`, `health`, `fan-out`, `timeouts`, `pool`, `exceptions`, `promises`, or `observability`.
    - `Checklist Section` should map to the relevant checklist area.
    - `Risk` must include the icon and label, for example: `🛑 critical`, `🔴 high`, `🟠 medium`, `🟡 low`, `🔵 info`.
    - `Impacted Files` is required for every row and should list the specific changed file path or the smallest concrete changed scope.

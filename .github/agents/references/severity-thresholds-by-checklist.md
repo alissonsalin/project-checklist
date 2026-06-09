@@ -92,6 +92,16 @@ Use this reference to classify findings consistently across checklist areas.
 | Logging Signal And Severity | Field consistency or diagnostic quality gaps. | low |
 | Logging Signal And Severity | Suggested structured logging improvements with no confirmed risk. | info |
 
+## Promise Resource Retention Safety
+
+| Type | Description | Severity |
+| --- | --- | --- |
+| Promise Resource Retention Safety | Promise can remain unresolved indefinitely on common path, causing unbounded memory/resource retention or process destabilization. | critical |
+| Promise Resource Retention Safety | Unhandled promise rejection, missing exception-path cleanup, or unbounded in-flight async fan-out with likely production impact. | high |
+| Promise Resource Retention Safety | Promise lifecycle or cleanup weakness exists but is bounded by low-frequency path, limits, or partial safeguards. | medium |
+| Promise Resource Retention Safety | Telemetry, diagnostics, or test coverage gap for promise failure/retention behavior. | low |
+| Promise Resource Retention Safety | Optional async lifecycle improvement suggestion with no confirmed reliability violation. | info |
+
 ## Checklist Coverage Gap And Process Guardrails
 
 | Type | Description | Severity |
