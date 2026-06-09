@@ -22,6 +22,7 @@ Use this file as the source of truth for the review agent in `.github/agents/cha
 - Logging quality and signal-to-noise must be reviewed with the `logging-signal-and-severity` skill when a change adds or modifies logging, tracing context, log levels, or alert-relevant events.
 - Retry mechanism safety must be reviewed with the `retry-mechanism` skill when a change adds or modifies retry loops, resilience policies, backoff configuration, circuit breakers, re-queue behavior, or any flow that can repeat a failed operation.
 - Queue consumer processing safety must be reviewed with the `queue-consumer-processing-safety` skill when a change adds or modifies Kafka, RabbitMQ, SQS, Service Bus, Pub/Sub, or other queue/stream consumers, especially per-message logging, external API calls, or database calls.
+- Exception handling safety must be reviewed with the `exception-handling-safety` skill when a change adds or modifies throw/catch logic, async failure paths, fallback behavior, or error translation boundaries.
 
 ## External HTTP Calls
 - Retries are present only for transient failures such as timeouts, connection failures, `429`, or `5xx` responses.
@@ -161,6 +162,16 @@ Use this file as the source of truth for the review agent in `.github/agents/cha
 - Consumer health and lag signals are observable: queue lag, processing latency, retry rate, DLQ rate, commit failures, and per-message dependency latency.
 - Security and privacy controls prevent sensitive message fields from being logged or sent unnecessarily to external dependencies.
 
+## Exception Handling Safety
+- Exception boundaries are explicit at request, worker, job, and startup edges so unhandled failures do not crash critical flows.
+- Catch blocks are intentional and actionable: exceptions are not silently swallowed, and root-cause context is preserved.
+- Async and background failure paths (tasks/promises/callbacks) do not drop unobserved exceptions.
+- Failure classification and translation are deliberate: transient, permanent, and business/domain errors are handled consistently.
+- Fallback/degraded behavior preserves correctness and does not mask hard failure as success.
+- Retry/fallback interplay does not create hidden loops, repeated exception storms, or call amplification.
+- Error logs, metrics, and traces make exception rate, fallback activation, and final failure outcomes observable.
+- Tests cover failure-path behavior, including malformed input, dependency exceptions, and async fault propagation.
+
 ## Skill to use
 - Use `.github/skills/external-http-calls/SKILL.md` for the detailed review workflow and suggestions.
 - Use `.github/skills/database-calls/SKILL.md` for the detailed database review workflow and suggestions.
@@ -175,3 +186,4 @@ Use this file as the source of truth for the review agent in `.github/agents/cha
 - Use `.github/skills/logging-signal-and-severity/SKILL.md` for the detailed workflow on log traceability, severity correctness, and flood prevention.
 - Use `.github/skills/retry-mechanism/SKILL.md` for the detailed workflow on retry loop safety, backoff quality, call amplification, idempotency, circuit-breaker review, and retry observability.
 - Use `.github/skills/queue-consumer-processing-safety/SKILL.md` for the detailed workflow on queue/stream consumer safety, including per-message log volume, dependency call amplification, ack/commit correctness, retries, and DLQ behavior.
+- Use `.github/skills/exception-handling-safety/SKILL.md` for the detailed workflow on exception boundaries, catch-block quality, async fault handling, failure translation, fallback safety, and runtime failure observability.
